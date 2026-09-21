@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeGuard — Disaster Preparedness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #131920;
+  --bg3: #1a2332;
+  --card: #161d28;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8edf4;
+  --muted: #7a8a9a;
+  --accent: #f97316;
+  --accent2: #fb923c;
+  --blue: #3b9eff;
+  --green: #22c55e;
+  --yellow: #facc15;
+  --red: #ef4444;
+  --teal: #14b8a6;
+  --purple: #a78bfa;
+  --radius: 14px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 64px;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.nav-logo {
+  font-family: var(--font-head);
+  font-size: 20px; font-weight: 800;
+  color: var(--text); cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo .dot { 
+  width: 28px; height: 28px; border-radius: 8px; 
+  background: var(--accent); display: flex; align-items: center; 
+  justify-content: center; font-size: 14px;
+}
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  transition: all 0.2s; border: none; background: none; font-family: var(--font-body);
+}
+.nav-link:hover, .nav-link.active { color: var(--text); background: var(--bg3); }
+.nav-link.active { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.points-badge {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 12px; font-weight: 600; color: var(--yellow);
+  display: flex; align-items: center; gap: 6px;
+}
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: var(--font-head);
+}
+
+/* PAGES */
+.page { display: none; padding-top: 64px; min-height: 100vh; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* AUTH PAGE */
+.auth-page {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 20px;
+  background: radial-gradient(ellipse 60% 50% at 50% -20%, rgba(249,115,22,0.12), transparent);
+}
+.auth-card {
+  width: 100%; max-width: 420px;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 40px;
+}
+.auth-title {
+  font-family: var(--font-head); font-size: 28px; font-weight: 800;
+  margin-bottom: 6px; text-align: center;
+}
+.auth-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 32px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+.form-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 16px; font-size: 14px; color: var(--text);
+  font-family: var(--font-body); outline: none; margin-bottom: 18px; transition: border 0.2s;
+}
+.form-input:focus { border-color: var(--accent); }
+.btn-primary {
+  width: 100%; background: var(--accent); border: none; border-radius: 10px;
+  padding: 13px; font-size: 14px; font-weight: 700; color: white; cursor: pointer;
+  font-family: var(--font-head); transition: all 0.2s; letter-spacing: 0.02em;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+.auth-switch span { color: var(--accent); cursor: pointer; font-weight: 600; }
+.auth-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #f87171; margin-bottom: 16px; display: none; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text { font-size: 12px; color: var(--muted); }
+.btn-google {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; color: var(--text);
+  cursor: pointer; font-family: var(--font-body); display: flex; align-items: center;
+  justify-content: center; gap: 10px; transition: all 0.2s;
+}
+.btn-google:hover { border-color: var(--border2); background: var(--bg2); }
+
+/* HOME / DASHBOARD */
+.dash-hero {
+  padding: 48px 28px 0;
+  background: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(249,115,22,0.08), transparent);
+}
+.hero-greeting { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.hero-title { font-family: var(--font-head); font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 24px; }
+.hero-title span { color: var(--accent); }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.stat-icon { font-size: 20px; margin-bottom: 10px; }
+.stat-val { font-family: var(--font-head); font-size: 26px; font-weight: 800; }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-change { font-size: 11px; color: var(--green); margin-top: 6px; }
+
+/* GRID LAYOUT */
+.dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 0 28px 40px; }
+.section-title {
+  font-family: var(--font-head); font-size: 16px; font-weight: 700;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.section-title .badge {
+  font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px;
+  background: rgba(249,115,22,0.15); color: var(--accent);
+}
+
+/* NEWS FEED */
+.news-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+  cursor: pointer; transition: all 0.2s; display: flex; gap: 14px; align-items: flex-start;
+}
+.news-card:hover { border-color: var(--border2); background: var(--bg3); }
+.news-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.news-content { flex: 1; }
+.news-title { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 6px; }
+.news-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+.severity {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.sev-high { background: rgba(239,68,68,0.15); color: #f87171; }
+.sev-med { background: rgba(250,204,21,0.15); color: #facc15; }
+.sev-low { background: rgba(34,197,94,0.15); color: #4ade80; }
+
+/* DISASTER MAP */
+.map-container {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; height: 320px; position: relative;
+}
+.map-svg-wrap { width: 100%; height: 100%; position: relative; }
+.map-pin {
+  cursor: pointer; transition: transform 0.2s;
+  animation: pulse-pin 2s ease-in-out infinite;
+}
+@keyframes pulse-pin { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.map-tooltip {
+  position: absolute; background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 12px; font-size: 12px; pointer-events: none;
+  display: none; z-index: 10; white-space: nowrap;
+}
+.map-legend {
+  position: absolute; bottom: 12px; left: 12px;
+  background: rgba(13,17,23,0.85); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--muted);
+}
+.legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* SIDEBAR */
+.sidebar {}
+.quick-access {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.qa-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 12px; cursor: pointer; transition: all 0.2s;
+  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.qa-btn:hover { border-color: var(--accent); background: rgba(249,115,22,0.08); }
+.qa-btn .icon { font-size: 22px; }
+.qa-btn .label { font-size: 12px; font-weight: 500; }
+
+/* PROGRESS */
+.progress-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.level-badge {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700;
+  font-family: var(--font-head);
+}
+.skill-bar-wrap { margin-bottom: 14px; }
+.skill-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.skill-label span:last-child { color: var(--muted); }
+.skill-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.skill-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+
+/* QUIZ PAGE */
+.quiz-page-inner { padding: 40px 28px; max-width: 800px; margin: 0 auto; }
+.quiz-categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
+.category-card {
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 20px; cursor: pointer; transition: all 0.25s;
+  text-align: center;
+}
+.category-card:hover, .category-card.selected { border-color: var(--accent); background: rgba(249,115,22,0.06); }
+.category-card .cat-icon { font-size: 36px; margin-bottom: 10px; }
+.category-card .cat-name { font-family: var(--font-head); font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.category-card .cat-count { font-size: 11px; color: var(--muted); }
+
+.quiz-arena { display: none; }
+.quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.quiz-progress-bar { flex: 1; margin: 0 20px; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.quiz-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s; }
+.quiz-timer {
+  width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-size: 16px; font-weight: 800; flex-shrink: 0;
+  transition: border-color 0.3s;
+}
+.quiz-timer.urgent { border-color: var(--red); color: var(--red); }
+.question-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px; margin-bottom: 20px;
+}
+.question-scenario {
+  background: var(--bg3); border-left: 3px solid var(--accent);
+  border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--muted);
+  margin-bottom: 16px; line-height: 1.6; font-style: italic;
+}
+.question-text { font-family: var(--font-head); font-size: 20px; font-weight: 700; line-height: 1.4; margin-bottom: 24px; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.option-btn {
+  background: var(--bg3); border: 2px solid var(--border);
+  border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s;
+  text-align: left; font-size: 14px; font-family: var(--font-body);
+  color: var(--text); line-height: 1.4; display: flex; align-items: flex-start; gap: 10px;
+}
+.option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(249,115,22,0.06); }
+.option-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.08); }
+.option-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); }
+.option-letter {
+  width: 24px; height: 24px; border-radius: 6px; background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-head);
+}
+.feedback-box {
+  border-radius: 12px; padding: 14px 18px; font-size: 14px; margin-bottom: 20px;
+  display: none; line-height: 1.5;
+}
+.feedback-box.correct { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+.feedback-box.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+.btn-next {
+  background: var(--accent); border: none; border-radius: 10px;
+  padding: 13px 28px; font-size: 14px; font-weight: 700; color: white; cursor: pointer;
+  font-family: var(--font-head); transition: all 0.2s; display: none;
+}
+.btn-next:hover { background: var(--accent2); }
+.quiz-result {
+  text-align: center; padding: 40px 20px; display: none;
+}
+.result-score {
+  font-family: var(--font-head); font-size: 80px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+}
+.result-label { font-size: 18px; color: var(--muted); margin-bottom: 24px; }
+.result-badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+.earned-badge {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 12px 16px; text-align: center;
+  animation: popIn 0.4s ease;
+}
+@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+.earned-badge .badge-icon { font-size: 32px; margin-bottom: 4px; }
+.earned-badge .badge-name { font-size: 11px; color: var(--muted); }
+
+/* FLASHCARDS */
+.flash-page { padding: 40px 28px; max-width: 800px; margin: 0 auto; }
+.flash-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.flash-cat-btn {
+  padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border2);
+  background: transparent; color: var(--muted); font-size: 13px; cursor: pointer;
+  transition: all 0.2s; font-family: var(--font-body);
+}
+.flash-cat-btn.active, .flash-cat-btn:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+.flashcard-scene { perspective: 1000px; height: 280px; margin-bottom: 24px; cursor: pointer; }
+.flashcard-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.flashcard-inner.flipped { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back {
+  position: absolute; inset: 0;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px; text-align: center;
+}
+.flashcard-back { transform: rotateY(180deg); background: var(--bg3); }
+.card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 16px; }
+.card-content { font-family: var(--font-head); font-size: 22px; font-weight: 700; line-height: 1.4; }
+.card-back-content { font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 500px; }
+.card-hint { font-size: 12px; color: var(--muted); margin-top: 16px; opacity: 0.7; }
+.flash-nav { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.flash-nav-btn {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600;
+  color: var(--text); cursor: pointer; transition: all 0.2s; font-family: var(--font-body);
+}
+.flash-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.flash-counter { font-size: 14px; color: var(--muted); min-width: 60px; text-align: center; }
+
+/* BADGES */
+.badges-page { padding: 40px 28px; }
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 32px; }
+.badge-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; text-align: center; transition: all 0.2s;
+}
+.badge-card.unlocked { border-color: rgba(249,115,22,0.4); }
+.badge-card.locked { opacity: 0.4; filter: grayscale(1); }
+.badge-card:hover.unlocked { transform: translateY(-4px); }
+.badge-emoji { font-size: 40px; margin-bottom: 10px; }
+.badge-name { font-size: 13px; font-weight: 700; font-family: var(--font-head); margin-bottom: 4px; }
+.badge-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* LEADERBOARD */
+.leaderboard-table {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.lb-row {
+  display: grid; grid-template-columns: 48px 1fr auto auto;
+  gap: 12px; align-items: center; padding: 14px 18px;
+  border-bottom: 1px solid var(--border); transition: background 0.2s;
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: var(--bg3); }
+.lb-row.me { background: rgba(249,115,22,0.06); border-color: rgba(249,115,22,0.2); }
+.lb-rank { font-family: var(--font-head); font-size: 18px; font-weight: 800; text-align: center; }
+.lb-rank.gold { color: var(--yellow); }
+.lb-rank.silver { color: #94a3b8; }
+.lb-rank.bronze { color: #b45309; }
+.lb-name { font-weight: 500; font-size: 14px; }
+.lb-pts { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--accent); }
+.lb-level { font-size: 11px; color: var(--muted); }
+
+/* DIY PAGE */
+.diy-page { padding: 40px 28px; }
+.diy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.diy-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.25s;
+}
+.diy-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+.diy-header { padding: 20px; border-bottom: 1px solid var(--border); }
+.diy-icon-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.diy-icon { font-size: 32px; }
+.diy-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; }
+.diy-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.diy-body { padding: 16px 20px; }
+.diy-step { display: flex; gap: 12px; margin-bottom: 14px; font-size: 13px; line-height: 1.5; }
+.diy-step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: var(--accent);
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; flex-shrink: 0; font-family: var(--font-head);
+}
+.diy-expanded { display: none; }
+.diy-card.open .diy-expanded { display: block; }
+.diy-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.diy-tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px;
+  background: var(--bg3); color: var(--muted); font-weight: 500;
+}
+
+/* DASHBOARD USER PAGE */
+.user-dash { padding: 40px 28px; max-width: 900px; margin: 0 auto; }
+.user-hero {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px; margin-bottom: 24px;
+  display: flex; gap: 24px; align-items: center;
+}
+.user-avatar-lg {
+  width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 800; font-family: var(--font-head);
+}
+.user-name { font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.user-email { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+.user-stats-row { display: flex; gap: 20px; }
+.user-stat { text-align: center; }
+.user-stat .val { font-family: var(--font-head); font-size: 22px; font-weight: 800; }
+.user-stat .lbl { font-size: 11px; color: var(--muted); }
+.quiz-history { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.hist-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.hist-row:last-child { border-bottom: none; }
+.hist-left { display: flex; gap: 12px; align-items: center; }
+.hist-icon { font-size: 20px; }
+.hist-name { font-weight: 500; }
+.hist-date { font-size: 12px; color: var(--muted); }
+.hist-score { font-family: var(--font-head); font-weight: 700; }
+.score-great { color: var(--green); }
+.score-ok { color: var(--yellow); }
+.score-poor { color: var(--red); }
+
+/* NOTIFICATION TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 14px 18px; font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid { grid-template-columns: 1fr; }
+  .quiz-categories { grid-template-columns: repeat(2, 1fr); }
+  .options-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+
+/* EMERGENCY NUMBERS */
+.emerg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.emerg-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer;
+  transition: all 0.2s;
+}
+.emerg-card:hover { border-color: var(--accent); }
+.emerg-num { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--accent); }
+.emerg-name { font-size: 13px; font-weight: 600; margin: 4px 0; }
+.emerg-desc { font-size: 11px; color: var(--muted); }
+
+/* DARK MODE TOGGLE */
+.dm-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2);
+  background: var(--bg3); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; transition: all 0.2s;
+}
+.dm-btn:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- AUTH PAGE -->
+<div class="auth-page" id="auth-page">
+  <div class="auth-card">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:40px;margin-bottom:8px">🛡️</div>
+      <div class="auth-title" id="auth-title">Welcome Back</div>
+      <div class="auth-sub" id="auth-sub">Sign in to continue your preparedness journey</div>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <div id="signup-fields" style="display:none">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" type="text" id="reg-name" placeholder="Alex Johnson">
+    </div>
+    <label class="form-label">Email Address</label>
+    <input class="form-input" type="email" id="auth-email" placeholder="you@example.com">
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="auth-password" placeholder="••••••••">
+    <button class="btn-primary" onclick="handleAuth()" id="auth-btn">Sign In</button>
+    <div class="divider"><div class="divider-line"></div><span class="divider-text">or</span><div class="divider-line"></div></div>
+    <button class="btn-google" onclick="loginWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <div class="auth-switch" id="auth-switch">Don't have an account? <span onclick="toggleAuth()">Sign Up</span></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo" onclick="showPage('home')">
+      <div class="dot">🛡</div> SafeGuard
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('home',this)">Dashboard</button>
+      <button class="nav-link" onclick="showPage('quiz',this)">Quizzes</button>
+      <button class="nav-link" onclick="showPage('flashcards',this)">Flashcards</button>
+      <button class="nav-link" onclick="showPage('diy',this)">DIY Guides</button>
+      <button class="nav-link" onclick="showPage('badges',this)">Rewards</button>
+      <button class="nav-link" onclick="showPage('userdash',this)">My Profile</button>
+    </div>
+    <div class="nav-right">
+      <div class="points-badge">⭐ <span id="nav-points">1250</span></div>
+      <div class="dm-btn" onclick="showToast('🌙 Dark mode is already active!')">🌙</div>
+      <div class="avatar" onclick="showPage('userdash')">AJ</div>
+    </div>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="dash-hero">
+      <div class="hero-greeting">Good afternoon, Alex 👋</div>
+      <div class="hero-title">Stay Safe, Stay <span>Prepared</span><br>Knowledge Saves Lives.</div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-val" style="color:var(--yellow)">1,250</div>
+          <div class="stat-label">Total Points</div>
+          <div class="stat-change">▲ +150 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" style="color:var(--green)">12</div>
+          <div class="stat-label">Quizzes Completed</div>
+          <div class="stat-change">▲ +3 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-val" style="color:var(--accent)">7</div>
+          <div class="stat-label">Day Streak</div>
+          <div class="stat-change">Personal best!</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎖️</div>
+          <div class="stat-val" style="color:var(--purple)">8</div>
+          <div class="stat-label">Badges Earned</div>
+          <div class="stat-change">2 new this week</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div>
+        <!-- MAP -->
+        <div class="section-title">🌍 Live Disaster Map <span class="badge">LIVE</span></div>
+        <div class="map-container" style="margin-bottom:20px">
+          <div class="map-tooltip" id="map-tt"></div>
+          <svg width="100%" height="100%" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+            <!-- Simple world map silhouette -->
+            <rect width="800" height="320" fill="#0d1117"/>
+            <!-- Grid lines -->
+            <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+              <line x1="0" y1="160" x2="800" y2="160"/>
+              <line x1="400" y1="0" x2="400" y2="320"/>
+              <line x1="0" y1="80" x2="800" y2="80"/>
+              <line x1="0" y1="240" x2="800" y2="240"/>
+              <line x1="200" y1="0" x2="200" y2="320"/>
+              <line x1="600" y1="0" x2="600" y2="320"/>
+            </g>
+            <!-- Simplified continents -->
+            <path d="M90,80 Q130,60 170,70 Q200,65 220,80 Q230,110 215,140 Q200,170 180,175 Q140,185 110,165 Q80,145 80,115 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M220,70 Q280,50 350,60 Q390,65 410,90 Q415,120 390,145 Q360,165 310,170 Q270,172 240,150 Q215,130 215,100 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M430,60 Q490,45 540,55 Q590,65 620,90 Q640,115 630,150 Q610,190 560,195 Q510,195 470,170 Q435,145 425,110 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M650,55 Q700,45 740,70 Q760,95 750,130 Q730,160 700,165 Q665,160 648,135 Q635,108 642,78 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M165,185 Q210,180 240,200 Q255,220 245,250 Q225,275 190,272 Q158,265 148,238 Q142,210 155,192 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M330,185 Q380,178 415,205 Q430,235 420,265 Q400,288 365,285 Q330,278 318,248 Q310,218 322,196 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M480,185 Q540,178 590,200 Q615,230 600,265 Q580,285 545,280 Q505,272 490,242 Q480,212 488,194 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <path d="M620,155 Q665,145 705,170 Q720,195 710,225 Q690,248 658,242 Q628,232 618,205 Q612,178 622,160 Z" fill="rgba(59,158,255,0.15)" stroke="rgba(59,158,255,0.2)" stroke-width="1"/>
+            <!-- Disaster pins -->
+            <g class="map-pin" onclick="showMapTooltip(event,'🌊 Tsunami Warning — Japan Coast','High severity',300,98)">
+              <circle cx="690" cy="100" r="14" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1.5"/>
+              <circle cx="690" cy="100" r="7" fill="#ef4444"/>
+              <text x="690" y="105" text-anchor="middle" font-size="8" fill="white">🌊</text>
+            </g>
+            <g class="map-pin" style="animation-delay:0.5s" onclick="showMapTooltip(event,'🌋 Earthquake — Indonesia','High severity',420,160)">
+              <circle cx="620" cy="162" r="14" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="1.5"/>
+              <circle cx="620" cy="162" r="7" fill="#f97316"/>
+              <text x="620" y="167" text-anchor="middle" font-size="8" fill="white">🌋</text>
+            </g>
+            <g class="map-pin" style="animation-delay:1s" onclick="showMapTooltip(event,'🌀 Cyclone Approaching — Bay of Bengal','Medium severity',500,140)">
+              <circle cx="560" cy="145" r="12" fill="rgba(250,204,21,0.2)" stroke="#facc15" stroke-width="1.5"/>
+              <circle cx="560" cy="145" r="6" fill="#facc15"/>
+              <text x="560" y="149" text-anchor="middle" font-size="7" fill="#1a1a00">🌀</text>
+            </g>
+            <g class="map-pin" style="animation-delay:0.8s" onclick="showMapTooltip(event,'🔥 Wildfire Alert — California','Medium severity',80,118)">
+              <circle cx="110" cy="120" r="12" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="1.5"/>
+              <circle cx="110" cy="120" r="6" fill="#f97316"/>
+              <text x="110" y="124" text-anchor="middle" font-size="7" fill="white">🔥</text>
+            </g>
+            <g class="map-pin" style="animation-delay:1.3s" onclick="showMapTooltip(event,'🌊 Flash Flood Warning — Bangladesh','Low severity',590,128)">
+              <circle cx="600" cy="130" r="10" fill="rgba(34,197,94,0.2)" stroke="#22c55e" stroke-width="1.5"/>
+              <circle cx="600" cy="130" r="5" fill="#22c55e"/>
+            </g>
+          </svg>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> High Risk</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div> Medium</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Low Risk</div>
+          </div>
+        </div>
+
+        <!-- NEWS FEED -->
+        <div class="section-title">📰 Disaster News Feed</div>
+        <div id="news-feed"></div>
+      </div>
+
+      <div class="sidebar">
+        <!-- QUICK ACCESS -->
+        <div class="quick-access">
+          <div class="section-title" style="font-size:14px">Quick Access</div>
+          <div class="qa-grid">
+            <div class="qa-btn" onclick="showPage('quiz')"><div class="icon">🧠</div><div class="label">Take Quiz</div></div>
+            <div class="qa-btn" onclick="showPage('flashcards')"><div class="icon">🃏</div><div class="label">Flashcards</div></div>
+            <div class="qa-btn" onclick="showPage('diy')"><div class="icon">🔧</div><div class="label">DIY Guide</div></div>
+            <div class="qa-btn" onclick="showPage('badges')"><div class="icon">🏅</div><div class="label">Rewards</div></div>
+          </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-card">
+          <div class="progress-header">
+            <div class="section-title" style="font-size:14px;margin:0">My Progress</div>
+            <div class="level-badge">Level 4</div>
+          </div>
+          <div class="skill-bar-wrap">
+            <div class="skill-label"><span>Earthquake Safety</span><span>82%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:82%;background:var(--red)"></div></div>
+          </div>
+          <div class="skill-bar-wrap">
+            <div class="skill-label"><span>Flood Preparedness</span><span>65%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:65%;background:var(--blue)"></div></div>
+          </div>
+          <div class="skill-bar-wrap">
+            <div class="skill-label"><span>Fire Safety</span><span>91%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:91%;background:var(--accent)"></div></div>
+          </div>
+          <div class="skill-bar-wrap">
+            <div class="skill-label"><span>First Aid</span><span>48%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:48%;background:var(--green)"></div></div>
+          </div>
+          <div class="skill-bar-wrap">
+            <div class="skill-label"><span>Cyclone Safety</span><span>30%</span></div>
+            <div class="skill-bar"><div class="skill-fill" style="width:30%;background:var(--purple)"></div></div>
+          </div>
+        </div>
+
+        <!-- EMERGENCY NUMBERS -->
+        <div class="progress-card" style="margin-top:16px">
+          <div class="section-title" style="font-size:14px">🚨 Emergency Numbers</div>
+          <div class="emerg-grid" style="grid-template-columns:1fr 1fr">
+            <div class="emerg-card"><div class="emerg-num">100</div><div class="emerg-name">Police</div></div>
+            <div class="emerg-card"><div class="emerg-num">101</div><div class="emerg-name">Fire</div></div>
+            <div class="emerg-card"><div class="emerg-num">108</div><div class="emerg-name">Ambulance</div></div>
+            <div class="emerg-card"><div class="emerg-num">1078</div><div class="emerg-name">Disaster Mgmt</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ PAGE -->
+  <div class="page" id="page-quiz">
+    <div class="quiz-page-inner">
+      <div id="quiz-select">
+        <div class="hero-title" style="margin-bottom:8px">Disaster <span style="color:var(--accent)">Quizzes</span></div>
+        <div style="color:var(--muted);font-size:14px;margin-bottom:28px">Test your knowledge in scenario-based challenges</div>
+        <div class="quiz-categories">
+          <div class="category-card selected" onclick="selectCategory(this,'earthquake')">
+            <div class="cat-icon">🌋</div>
+            <div class="cat-name">Earthquake</div>
+            <div class="cat-count">10 questions</div>
+          </div>
+          <div class="category-card" onclick="selectCategory(this,'flood')">
+            <div class="cat-icon">🌊</div>
+            <div class="cat-name">Flood</div>
+            <div class="cat-count">8 questions</div>
+          </div>
+          <div class="category-card" onclick="selectCategory(this,'fire')">
+            <div class="cat-icon">🔥</div>
+            <div class="cat-name">Fire</div>
+            <div class="cat-count">9 questions</div>
+          </div>
+          <div class="category-card" onclick="selectCategory(this,'cyclone')">
+            <div class="cat-icon">🌀</div>
+            <div class="cat-name">Cyclone</div>
+            <div class="cat-count">8 questions</div>
+          </div>
+          <div class="category-card" onclick="selectCategory(this,'tsunami')">
+            <div class="cat-icon">🌏</div>
+            <div class="cat-name">Tsunami</div>
+            <div class="cat-count">7 questions</div>
+          </div>
+          <div class="category-card" onclick="selectCategory(this,'firstaid')">
+            <div class="cat-icon">🩺</div>
+            <div class="cat-name">First Aid</div>
+            <div class="cat-count">10 questions</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="max-width:200px" onclick="startQuiz()">Start Quiz →</button>
+      </div>
+
+      <div class="quiz-arena" id="quiz-arena">
+        <div class="quiz-header">
+          <div style="font-size:13px;color:var(--muted)">Q <span id="q-num">1</span>/5</div>
+          <div class="quiz-progress-bar"><div class="quiz-fill" id="quiz-bar" style="width:20%"></div></div>
+          <div class="quiz-timer" id="quiz-timer">30</div>
+        </div>
+        <div class="question-box">
+          <div class="question-scenario" id="q-scenario"></div>
+          <div class="question-text" id="q-text"></div>
+          <div class="options-grid" id="options-grid"></div>
+        </div>
+        <div class="feedback-box" id="feedback-box"></div>
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+      </div>
+
+      <div class="quiz-result" id="quiz-result">
+        <div style="font-size:48px;margin-bottom:12px">🎯</div>
+        <div class="result-score" id="result-score">80%</div>
+        <div class="result-label" id="result-label">Great job! You answered 4 out of 5 correctly.</div>
+        <div class="result-badges" id="result-badges"></div>
+        <button class="btn-primary" style="max-width:200px;margin:0 auto" onclick="resetQuiz()">Try Another Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARDS PAGE -->
+  <div class="page" id="page-flashcards">
+    <div class="flash-page">
+      <div class="hero-title" style="margin-bottom:8px">Safety <span style="color:var(--accent)">Flashcards</span></div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:24px">Click the card to reveal the answer</div>
+      <div class="flash-cats" id="flash-cats"></div>
+      <div class="flashcard-scene" onclick="flipCard()">
+        <div class="flashcard-inner" id="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="card-label" id="card-cat-label">Earthquake</div>
+            <div class="card-content" id="card-front-text">What should you do when an earthquake starts?</div>
+            <div class="card-hint">👆 Click to reveal answer</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="card-label">Answer</div>
+            <div class="card-back-content" id="card-back-text">Drop to your hands and knees. Take cover under a sturdy desk or table, or against an interior wall. Hold on and protect your head and neck with your arms. Stay until shaking stops.</div>
+          </div>
+        </div>
+      </div>
+      <div class="flash-nav">
+        <button class="flash-nav-btn" onclick="prevCard()">← Previous</button>
+        <div class="flash-counter" id="flash-counter">1 / 8</div>
+        <button class="flash-nav-btn" onclick="nextCard()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIY PAGE -->
+  <div class="page" id="page-diy">
+    <div class="diy-page">
+      <div class="hero-title" style="margin-bottom:8px">DIY Survival <span style="color:var(--accent)">Guides</span></div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:28px">Practical guides to prepare with minimal resources</div>
+      <div class="diy-grid" id="diy-grid"></div>
+    </div>
+  </div>
+
+  <!-- BADGES PAGE -->
+  <div class="page" id="page-badges">
+    <div class="badges-page">
+      <div class="hero-title" style="margin-bottom:8px">Badges & <span style="color:var(--accent)">Tournaments</span></div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:28px">Earn rewards for your preparedness journey</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <div class="section-title">🏅 Your Badges</div>
+          <div class="badges-grid" id="badges-grid"></div>
+        </div>
+        <div>
+          <div class="section-title">🏆 Leaderboard <span class="badge">LIVE</span></div>
+          <div class="leaderboard-table" id="leaderboard"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER DASHBOARD PAGE -->
+  <div class="page" id="page-userdash">
+    <div class="user-dash">
+      <div class="user-hero">
+        <div class="user-avatar-lg">AJ</div>
+        <div style="flex:1">
+          <div class="user-name">Alex Johnson</div>
+          <div class="user-email">alex.johnson@example.com</div>
+          <div class="user-stats-row">
+            <div class="user-stat"><div class="val" style="color:var(--yellow)">1,250</div><div class="lbl">Points</div></div>
+            <div class="user-stat"><div class="val" style="color:var(--green)">12</div><div class="lbl">Quizzes</div></div>
+            <div class="user-stat"><div class="val" style="color:var(--purple)">8</div><div class="lbl">Badges</div></div>
+            <div class="user-stat"><div class="val" style="color:var(--accent)">Level 4</div><div class="lbl">Rank</div></div>
+          </div>
+        </div>
+        <button class="btn-primary" style="max-width:120px;padding:10px" onclick="logout()">Sign Out</button>
+      </div>
+
+      <div class="section-title">📊 Quiz History</div>
+      <div class="quiz-history" id="quiz-history"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// APP STATE
+// ============================================================
+let appState = {
+  user: null,
+  points: 1250,
+  currentPage: 'auth',
+  quizCategory: 'earthquake',
+  currentQuestion: 0,
+  quizScore: 0,
+  timerInterval: null,
+  timeLeft: 30,
+  flashcardIndex: 0,
+  flashcardCat: 'earthquake',
+  cardFlipped: false,
+  answeredQuestions: false
+};
+
+// ============================================================
+// DATA
+// ============================================================
+const newsData = [
+  { icon: '🌊', type: 'Tsunami', title: 'Japan Coast Tsunami Warning Issued After 6.8M Earthquake', time: '2h ago', severity: 'high', region: 'Pacific' },
+  { icon: '🔥', type: 'Wildfire', title: 'Wildfire Spreads Across 5,000 Acres in Northern California', time: '4h ago', severity: 'high', region: 'North America' },
+  { icon: '🌀', type: 'Cyclone', title: 'Cyclone Mocha Intensifies — Bay of Bengal on Alert', time: '6h ago', severity: 'med', region: 'South Asia' },
+  { icon: '🌧️', type: 'Flood', title: 'Flash Flood Watch Issued for Bangladesh Delta Region', time: '8h ago', severity: 'med', region: 'South Asia' },
+  { icon: '🌋', type: 'Volcano', title: 'Mount Merapi Shows Increased Activity in Java, Indonesia', time: '12h ago', severity: 'low', region: 'Southeast Asia' },
+];
+
+const quizData = {
+  earthquake: [
+    { scenario: "You are inside a multi-story office building when the ground starts shaking violently.", question: "What is the FIRST action you should take?", options: ["Run outside immediately", "Drop, cover, and hold under a desk", "Call emergency services", "Open windows to prevent pressure buildup"], correct: 1, explanation: "Drop, Cover, Hold On is the globally recommended action. Running outside risks injury from falling debris." },
+    { scenario: "The shaking has stopped after a moderate earthquake. You're in a coastal city.", question: "What is the most critical next step?", options: ["Check for gas leaks only", "Move to higher ground immediately", "Stay indoors and call family", "Help neighbours before leaving"], correct: 1, explanation: "After an earthquake near the coast, moving to higher ground immediately is critical as tsunamis can follow within minutes." },
+    { scenario: "You are driving when an earthquake strikes.", question: "What should you do?", options: ["Speed up to exit the area", "Pull over away from bridges and buildings, stay in car", "Jump out of the moving car", "Drive under an overpass for shelter"], correct: 1, explanation: "Pull over safely away from overpasses, buildings, and power lines. Stay in the car as it provides some protection from falling debris." },
+    { scenario: "A building near you starts to partially collapse during the shaking.", question: "If you're trapped under debris, what should you do?", options: ["Shout constantly for help", "Use a whistle or tap on pipes to signal rescuers", "Try to crawl through rubble", "Light a match to see clearly"], correct: 1, explanation: "Tapping on pipes or using a whistle conserves energy and carries the signal farther than shouting." },
+    { scenario: "The shaking has fully stopped. You are unhurt and outside.", question: "Which area poses the HIGHEST secondary risk?", options: ["Open parks", "Near undamaged concrete buildings", "Under power lines and near gas lines", "On a sidewalk"], correct: 2, explanation: "Downed power lines and gas leaks from ruptured pipes are the most dangerous secondary risks after an earthquake." },
+  ],
+  flood: [
+    { scenario: "Heavy rains have been falling for 48 hours. Authorities issue a flood watch for your area.", question: "What should you do FIRST?", options: ["Wait and monitor the situation", "Prepare an emergency go-bag and identify evacuation routes", "Sandbag your house immediately", "Move furniture upstairs"], correct: 1, explanation: "Preparing your go-bag and knowing evacuation routes first ensures you can leave quickly if conditions worsen." },
+    { scenario: "Floodwater begins entering your home rapidly.", question: "What is the safest action if you cannot evacuate?", options: ["Stay on the ground floor with the water", "Move to the highest floor and signal for help", "Swim to a neighbour's house", "Open doors to let water flow through"], correct: 1, explanation: "Moving to the highest point of the building and signalling for help is safest — floodwater can carry hidden hazards." },
+    { scenario: "You encounter a flooded road while driving during a storm.",question: "How deep is water that can stall most cars?",options:["12 inches (30 cm)","6 inches (15 cm)","24 inches (60 cm)","Only deep enough to touch windows"],correct:1,explanation:"Just 6 inches of water can stall a car. 12 inches can carry a small vehicle. Turn around, don't drown."},
+    { scenario: "Floodwaters are receding after a major flood event.",question: "What is the MOST dangerous thing to avoid?",options:["Re-entering your home","Drinking tap water without checking with authorities","Walking through standing water","All of the above"],correct:3,explanation:"All three are dangerous: homes may be structurally unsafe, tap water may be contaminated, and standing water can hide hazards including downed power lines." },
+    { scenario: "You need to cross floodwater on foot as an absolute last resort.",question: "What tool is essential for safe crossing?",options:["A life jacket","A stick to feel the ground ahead","Waterproof boots","Swimming goggles"],correct:1,explanation:"A sturdy stick lets you test ground stability and water depth before each step, preventing falls into hidden holes or drains." },
+  ],
+  fire: [
+    { scenario: "You wake up at night to your smoke detector alarming. Your bedroom door feels hot.",question: "What should you do?",options:["Open the door to check the fire","Use your window as an escape route","Try to save valuables first","Shout for family from the room"],correct:1,explanation:"A hot door means fire is directly on the other side. Never open it. Use your pre-planned window escape route immediately." },
+    { scenario: "A small kitchen grease fire ignites in your pan.",question: "What is the SAFEST first action?",options:["Pour water on it","Slide a lid over the pan and turn off the heat","Use a dishcloth to smother it","Carry the pan outside"],correct:1,explanation:"Sliding a lid on smothers the fire by cutting off oxygen. Water causes a dangerous steam explosion with grease fires." },
+    { scenario: "You are escaping a house fire. Smoke is filling the hallway.",question: "What is the correct way to move?",options:["Stand upright and move fast","Crawl low under the smoke","Run with a wet cloth over your mouth","Move along the wall at head height"],correct:1,explanation:"Smoke and toxic gases rise. The clearest air is near the floor. Crawl on your hands and knees to stay below the smoke layer." },
+    { scenario: "Your clothing catches fire while cooking.",question: "What is the correct emergency response?",options:["Run to the bathroom","Shake your arms to extinguish","Stop, drop, and roll on the ground","Pour water over yourself while standing"],correct:2,explanation:"Stop, Drop, and Roll smothers flames by cutting off oxygen. Running fans the flames and increases burns." },
+    { scenario: "You're outside a burning building and see someone about to re-enter to retrieve belongings.",question: "What should you tell them?",options:["Help them retrieve the items quickly","Never re-enter a burning building","Only re-enter if the fire is small","Only re-enter to save pets"],correct:1,explanation:"You should never re-enter a burning building. Conditions change in seconds. Professional firefighters use full protective gear for a reason." },
+  ],
+  cyclone:[
+    {scenario:"A cyclone is forecast to make landfall in your area in 24 hours.",question:"What is the MOST important preparation?",options:["Board up windows only","Fill bathtub with water, gather emergency supplies, identify shelter","Buy more food","Monitor TV continuously"],correct:1,explanation:"A 72-hour supply kit with water, food, and first aid is critical, as services may be disrupted for days after landfall."},
+    {scenario:"You are in the eye of the cyclone. It becomes calm and quiet.",question:"What should you do?",options:["Go outside — the storm is over","Stay sheltered; the other eyewall will arrive soon","Open windows to equalise pressure","Call for help on your mobile phone"],correct:1,explanation:"The eye is deceiving. The most dangerous part — the opposite eyewall with fierce winds — arrives shortly after."},
+    {scenario:"Cyclone winds are at their peak outside your shelter.",question:"Where is the safest place inside a building?",options:["Near large windows to monitor","An interior room away from windows, on the lowest solid floor","The attic","The garage"],correct:1,explanation:"Interior rooms on lower floors have the best structural protection. Windows can shatter, and upper floors are more vulnerable to wind."},
+    {scenario:"After the cyclone passes, you step outside and find downed power lines in puddles of water.",question:"What is the correct action?",options:["Step around them carefully","Assume all downed lines are live and stay far away","Use a rubber mat to step over","Call a neighbour to move them"],correct:1,explanation:"Assume all downed power lines are energised. Water conducts electricity. Stay at least 10 meters away and call the electricity utility."},
+    {scenario:"The storm surge from a cyclone begins flooding your coastal area.",question:"Storm surge is most dangerous because:",options:["It comes with strong winds","It can arrive before the storm center, is unpredictable in height, and drowning is the #1 cyclone killer","It always follows the eye","It only affects low-lying areas"],correct:1,explanation:"Storm surge — the abnormal rise of seawater — accounts for the most cyclone deaths. It can arrive hours before landfall and extend miles inland."},
+  ],
+  tsunami:[
+    {scenario:"You feel a long, strong earthquake while at the beach.",question:"Without waiting for an official warning, you should:",options:["Wait for official alert before moving","Immediately move inland to high ground","Watch the ocean for signs of a wave","Help others gather their belongings first"],correct:1,explanation:"A strong earthquake near the coast IS a natural tsunami warning. Do not wait for an official alert — move immediately to high ground."},
+    {scenario:"You notice the sea rapidly receding far from the shoreline, exposing the seabed.",question:"This is a sign of:",options:["Extremely low tide","An approaching tsunami wave","Underwater earthquake only","Ocean floor activity"],correct:1,explanation:"Rapid sea recession is a classic warning sign. The wave trough arrives first. You may have only 2-5 minutes before the crest arrives."},
+    {scenario:"A tsunami warning has been issued for your area.",question:"What is the minimum safe elevation to reach?",options:["3 meters above sea level","30 meters above sea level or 3 km inland","10 meters above sea level","Any elevated building is safe"],correct:1,explanation:"Guidelines typically recommend 30+ meters elevation or 3+ km inland. In the 2004 Indian Ocean tsunami, waves exceeded 30 meters in some areas."},
+    {scenario:"You are in a multi-story coastal hotel when a tsunami warning is issued and you cannot reach high ground.",question:"What is the best alternative?",options:["Move to the ground floor by the exit","Go to the highest floor of the building","Stay on the beach to observe","Move to a lower floor for stability"],correct:1,explanation:"If you cannot evacuate to high ground, moving to the highest floor of a sturdy concrete building is the best alternative."},
+    {scenario:"After the first tsunami wave passes, it appears calm.",question:"Is it safe to return to the beach?",options:["Yes, the worst is over","No, subsequent waves are often larger and more destructive","Yes, but only for 10 minutes","Only after 2 hours"],correct:1,explanation:"Tsunami events consist of multiple waves. Later waves are frequently larger than the first. Never return to shore until authorities declare it safe."},
+  ],
+  firstaid:[
+    {scenario:"Someone collapses and is unresponsive. They are not breathing normally.",question:"What is the correct sequence?",options:["Check pulse for 2 minutes, then call","Call emergency services, then start CPR 30:2","Give rescue breaths first","Wait for ambulance before touching them"],correct:1,explanation:"Call first (or have someone call while you act), then begin CPR with 30 chest compressions to 2 rescue breaths. Every second matters."},
+    {scenario:"A person has a deep cut on their forearm that is bleeding heavily.",question:"What is the FIRST priority?",options:["Wash the wound with soap","Apply firm, direct pressure with a clean cloth","Apply a tourniquet immediately","Elevate and wait for it to stop"],correct:1,explanation:"Direct pressure is the first and most effective step to stop bleeding. Apply firm, sustained pressure and do not remove the cloth."},
+    {scenario:"A child has swallowed an unknown chemical.",question:"What should you do immediately?",options:["Make the child vomit","Call Poison Control or emergency services immediately without inducing vomiting","Give water to dilute it","Wait to see if symptoms develop"],correct:1,explanation:"Never induce vomiting for chemical ingestion — it can cause additional chemical burns. Call Poison Control immediately."},
+    {scenario:"Someone is having a seizure on the floor.",question:"What is the CORRECT response?",options:["Hold them still to prevent injury","Clear the area, protect their head, time the seizure, never put anything in their mouth","Put something in their mouth to protect tongue","Restrain their limbs"],correct:1,explanation:"Clear the area, cushion the head, and time the seizure. Never restrain or put anything in the mouth — the tongue cannot be swallowed."},
+    {scenario:"A person shows signs of heat stroke: hot dry skin, confusion, very high temperature.",question:"What is the emergency cooling priority?",options:["Give them water immediately","Cool them rapidly using ice packs on neck, armpits, and groin while calling emergency services","Have them rest in shade","Give electrolyte drinks"],correct:1,explanation:"Heat stroke is life-threatening. Rapid cooling is the immediate priority. Apply ice/cold water to high blood-flow areas while emergency services are called."},
+  ]
+};
+
+const flashcardsData = {
+  earthquake: [
+    { front: "What does 'Drop, Cover, Hold On' mean?", back: "DROP to hands and knees. Take COVER under a sturdy table or against an interior wall, protecting your head. HOLD ON until shaking stops. This protects you from falling objects." },
+    { front: "What is an earthquake 'aftershock'?", back: "A smaller earthquake that follows the main event, sometimes minutes or days later. Aftershocks can be dangerous as they strike already weakened structures. Always treat them seriously." },
+    { front: "What is a 'liquefaction' hazard?", back: "When saturated soil temporarily loses strength during an earthquake and behaves like a liquid. Buildings can sink or tilt. Avoid building in known liquefaction zones." },
+    { front: "What should be in a 72-hour earthquake kit?", back: "Water (3L/person/day), non-perishable food, first aid kit, flashlight, batteries, whistle, dust masks, local maps, medication, copies of important documents, and cash." },
+  ],
+  flood: [
+    { front: "What is a 'flood watch' vs 'flood warning'?", back: "WATCH: Conditions are favorable for flooding — prepare and monitor. WARNING: Flooding is occurring or imminent — take action immediately. A warning requires immediate response." },
+    { front: "How much water can sweep a person off their feet?", back: "Just 15 cm (6 inches) of fast-moving water can knock an adult over. 30 cm (1 foot) can sweep away a small vehicle. Never underestimate floodwater depth or speed." },
+    { front: "What does 'Turn Around, Don't Drown' mean?", back: "Never attempt to drive or walk through flooded roads. More than half of flood deaths occur in vehicles. If you encounter a flooded road, turn around and find an alternate route." },
+    { front: "How long can contaminated floodwater make you sick?", back: "Floodwater carries sewage, chemicals, and pathogens. Contact can cause skin infections, Leptospirosis, Typhoid, and Hepatitis A. Wash thoroughly after any contact and avoid drinking untested water." },
+  ],
+  fire: [
+    { front: "What does PASS stand for for fire extinguishers?", back: "PULL the pin. AIM low at the base of the fire. SQUEEZE the handle slowly. SWEEP from side to side. Only use an extinguisher if the fire is small and you have a clear exit." },
+    { front: "What temperature can a house fire reach in minutes?", back: "Within 2 minutes, a fire can become life-threatening. In 5 minutes, a house can be engulfed. Temperatures at ceiling level can reach 600°C — hot enough to ignite everything in the room." },
+    { front: "What is the '2 minute' fire escape rule?", back: "You have approximately 2 minutes to escape a house fire safely once the alarm sounds. Practice home fire drills so everyone knows the escape route and meeting point without thinking." },
+    { front: "Why does smoke kill more than flames?", back: "Smoke causes disorientation, unconsciousness, and carbon monoxide poisoning before flames arrive. Most fire deaths are from smoke inhalation, not burns. Stay low where air is cleaner." },
+  ],
+  cyclone: [
+    { front: "What is a 'storm surge' and why is it deadly?", back: "Storm surge is an abnormal rise in sea level driven by cyclone winds, potentially 6+ meters above normal. It's the leading cause of cyclone fatalities, causing rapid and widespread coastal flooding." },
+    { front: "What is the Saffir-Simpson scale?", back: "A 1-5 scale rating cyclone intensity. Category 1: 74-95 mph winds. Category 5: 157+ mph winds. Categories 3-5 are considered 'major' hurricanes with catastrophic damage potential." },
+    { front: "What is the 'eye' of a cyclone?", back: "The calm center of a tropical cyclone, typically 20-60 km wide. Though eerily calm, it's surrounded by the eyewall — the most violent part of the storm. Never assume the storm has passed when the eye arrives." },
+    { front: "What supplies should you store before cyclone season?", back: "Battery radio, 3-day water supply (4L/person/day), canned food, manual can opener, first aid kit, flashlights, spare batteries, important documents in waterproof bag, and cash." },
+  ],
+  firstaid: [
+    { front: "What is the recovery position and when to use it?", back: "Place an unconscious but breathing person on their side with their head tilted back. This prevents choking if they vomit and maintains an open airway. Check breathing every minute." },
+    { front: "How do you check if someone is responsive?", back: "AVPU scale: Alert (are they awake?), Voice (do they respond to voice?), Pain (do they respond to a sternal rub?), Unresponsive. If unresponsive and not breathing normally, start CPR." },
+    { front: "What is a tourniquet and when is it used?", back: "A tourniquet is applied above a wound to stop life-threatening limb bleeding that cannot be controlled with direct pressure. Apply 5-7 cm above the wound, note the time applied, and do not remove it." },
+    { front: "What are the signs of anaphylactic shock?", back: "Sudden hives/rash, throat swelling, difficulty breathing, drop in blood pressure, fast pulse, pale skin, vomiting. Use an epinephrine auto-injector (EpiPen) immediately and call emergency services." },
+  ],
+};
+
+const diyGuides = [
+  {
+    icon: '🎒', title: 'Build a 72-Hour Survival Kit',
+    desc: 'Essential supplies to sustain you and your family for 3 days after any disaster.',
+    tags: ['All Disasters', 'Family', 'Beginner'],
+    steps: [
+      'Water: Store 3 litres per person per day. Use sealed commercial bottles or food-grade containers. Rotate every 6 months.',
+      'Food: Non-perishable items with long shelf life — canned goods, energy bars, dried fruits. Include a manual can opener.',
+      'First Aid: Pre-assembled kit including bandages, antiseptic, pain relievers, prescription medications for 1 week.',
+      'Tools & Safety: Flashlight with spare batteries, whistle to signal rescuers, dust masks (N95), multi-tool or Swiss army knife.',
+      'Documents & Cash: Waterproof bag with copies of ID, insurance, bank accounts. Include small bills as ATMs may be offline.',
+    ]
+  },
+  {
+    icon: '💧', title: 'Emergency Water Purification',
+    desc: 'How to make water safe to drink using minimal supplies during emergencies.',
+    tags: ['Flood', 'Survival', 'Intermediate'],
+    steps: [
+      'Boiling: Bring water to a rolling boil for at least 1 minute (3 min at altitude). Let cool before drinking. Most effective method.',
+      'Bleach Method: Add 8 drops of unscented household bleach (5-8% chlorine) per 4 litres of clear water. Wait 30 minutes before drinking.',
+      'Filtration: Use a cloth to remove large particles first, then improvise with sand, gravel, and charcoal layers in a bottle with holes in the cap.',
+      'Solar Disinfection (SODIS): Fill clear PET bottles with filtered water. Place in direct sunlight for 6 hours (or 2 days if cloudy). Effective for pathogens.',
+      'Iodine tablets: Follow package instructions. Note: iodine is not safe for pregnant women or people with thyroid conditions.',
+    ]
+  },
+  {
+    icon: '⛺', title: 'Build a Temporary Shelter',
+    desc: 'How to create emergency shelter using basic materials when displaced.',
+    tags: ['General', 'Outdoor', 'Intermediate'],
+    steps: [
+      'Site Selection: Choose flat ground away from flood plains, cliff edges, and dead trees. Higher ground is better. Face shelter away from prevailing winds.',
+      'Tarp Shelter: Tie a rope between two trees at chest height. Drape a tarp over it and stake corners into the ground. Creates an A-frame in minutes.',
+      'Debris Hut: If no materials, pile dead leaves and branches into a mound 1 meter taller than you. Crawl inside — insulation keeps body heat in.',
+      'Urban Shelter: In collapsed building situations, use stable walls as anchor. Create a lean-to with debris to block wind and rain.',
+      'Insulate the Floor: ALWAYS insulate from the ground — you lose more body heat to cold ground than to air. Use leaves, cardboard, or clothing as a barrier.',
+    ]
+  },
+  {
+    icon: '🩹', title: 'Disaster First Aid Basics',
+    desc: 'Critical first aid procedures when professional medical help may be hours away.',
+    tags: ['Medical', 'All Disasters', 'Essential'],
+    steps: [
+      'Scene Safety First: Never approach an injured person if the scene is unsafe. Check for fire, gas, unstable structures, or downed wires.',
+      'Control Bleeding: Apply firm direct pressure with a clean cloth for at least 10 minutes without lifting. For severe limb wounds, apply tourniquet 7cm above injury.',
+      'Shock Management: If person is in shock (pale, cold, rapid pulse), lay them flat, elevate their legs 30cm, keep warm with a blanket, and calm them.',
+      'Fractures: Do NOT straighten a broken bone. Immobilise it in the position found using splints made from boards or rolled newspapers, padded with cloth.',
+      'Airway & Breathing: For unconscious casualties, tilt head back to open airway. Check for breathing. If absent and no pulse, begin CPR: 30 compressions, 2 breaths.',
+    ]
+  },
+  {
+    icon: '🍱', title: 'Emergency Food Without Power',
+    desc: 'How to prepare and ration food when electricity is out for extended periods.',
+    tags: ['Food Safety', 'Power Outage', 'Family'],
+    steps: [
+      'Refrigerator Rule: Food stays safe in an unopened refrigerator for 4 hours. A full, unopened freezer stays safe for 48 hours. Keep doors closed!',
+      'Food Priority: Eat fresh food first, then refrigerated, then frozen, then canned/dry goods. This maximises food safety without waste.',
+      'No-Cook Essentials: Stock peanut butter, crackers, canned tuna, beans, and dried fruits — nutrition without any cooking required.',
+      'Safe Cooking: Use a camp stove or barbecue OUTDOORS only to avoid carbon monoxide poisoning. Never burn charcoal inside.',
+      'Ration Calculation: Adults need roughly 2,000 calories/day. One can of beans (~400 cal), peanut butter (600 cal/100g), and crackers can provide a full day.',
+    ]
+  },
+  {
+    icon: '📡', title: 'Emergency Communication Plan',
+    desc: 'Set up a family communication plan to stay connected during disasters.',
+    tags: ['Communication', 'Family', 'Planning'],
+    steps: [
+      'Choose an Out-of-Area Contact: Designate a relative or friend far from your area as the family check-in point. Local lines jam; out-of-area calls often go through.',
+      'Text First: During emergencies, text messages require less network bandwidth than voice calls and are more likely to succeed. Save data for emergency alerts.',
+      'Meeting Points: Establish two family meeting points — one near home (mailbox), one farther away (community centre). Everyone must memorise these.',
+      'Battery Radio: A hand-cranked or battery-powered FM/AM radio is essential. Broadcast radio is often the only functioning emergency information channel during disasters.',
+      'ICE Contacts: Program "ICE" (In Case of Emergency) into all mobile phones. First responders check for this. Include medical information too.',
+    ]
+  },
+];
+
+const badgesData = [
+  { emoji: '🔥', name: 'Fire Starter', desc: 'Completed first quiz', unlocked: true },
+  { emoji: '⭐', name: 'Rising Star', desc: 'Earned 500 points', unlocked: true },
+  { emoji: '🧠', name: 'Quick Thinker', desc: 'Answered in under 10 seconds', unlocked: true },
+  { emoji: '🏃', name: 'Survivor', desc: 'Completed 5 quizzes', unlocked: true },
+  { emoji: '🔥', name: '7-Day Streak', desc: 'Learned 7 days in a row', unlocked: true },
+  { emoji: '🌊', name: 'Flood Expert', desc: 'Aced flood quiz', unlocked: true },
+  { emoji: '🎯', name: 'Perfect Score', desc: 'Got 100% on a quiz', unlocked: true },
+  { emoji: '📚', name: 'Bookworm', desc: 'Read all DIY guides', unlocked: true },
+  { emoji: '🛡️', name: 'Guardian', desc: 'Reach Level 5', unlocked: false },
+  { emoji: '🌍', name: 'World Saver', desc: 'Master all disaster types', unlocked: false },
+  { emoji: '🏆', name: 'Champion', desc: 'Win a tournament', unlocked: false },
+  { emoji: '💎', name: 'Diamond', desc: 'Earn 5,000 points', unlocked: false },
+];
+
+const leaderboardData = [
+  { name: 'Priya Sharma', pts: 4850, level: 'Level 8', rank: 1 },
+  { name: 'Ravi Kumar', pts: 3920, level: 'Level 7', rank: 2 },
+  { name: 'Maria Santos', pts: 3410, level: 'Level 6', rank: 3 },
+  { name: 'Chen Wei', pts: 2780, level: 'Level 6', rank: 4 },
+  { name: 'Alex Johnson', pts: 1250, level: 'Level 4', rank: 12, isMe: true },
+];
+
+const quizHistory = [
+  { icon: '🔥', name: 'Fire Safety Quiz', date: 'Today, 10:32 AM', score: 100, total: 5 },
+  { icon: '🌊', name: 'Flood Preparedness', date: 'Yesterday, 4:15 PM', score: 80, total: 5 },
+  { icon: '🌋', name: 'Earthquake Safety', date: '2 days ago', score: 60, total: 5 },
+  { icon: '🌀', name: 'Cyclone Basics', date: '4 days ago', score: 100, total: 5 },
+  { icon: '🩺', name: 'First Aid Basics', date: '5 days ago', score: 40, total: 5 },
+];
+
+// ============================================================
+// AUTH
+// ============================================================
+let isSignUp = false;
+function toggleAuth() {
+  isSignUp = !isSignUp;
+  document.getElementById('auth-title').textContent = isSignUp ? 'Create Account' : 'Welcome Back';
+  document.getElementById('auth-sub').textContent = isSignUp ? 'Join thousands learning disaster preparedness' : 'Sign in to continue your preparedness journey';
+  document.getElementById('signup-fields').style.display = isSignUp ? 'block' : 'none';
+  document.getElementById('auth-btn').textContent = isSignUp ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-switch').innerHTML = isSignUp ? 'Already have an account? <span onclick="toggleAuth()">Sign In</span>' : "Don't have an account? <span onclick=\"toggleAuth()\">Sign Up</span>";
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function handleAuth() {
+  const email = document.getElementById('auth-email').value;
+  const pass = document.getElementById('auth-password').value;
+  const err = document.getElementById('auth-error');
+  if (!email || !pass) { err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return; }
+  if (!email.includes('@')) { err.textContent = 'Please enter a valid email address.'; err.style.display = 'block'; return; }
+  if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
+  if (isSignUp) {
+    const name = document.getElementById('reg-name').value;
+    if (!name) { err.textContent = 'Please enter your name.'; err.style.display = 'block'; return; }
+  }
+  loginSuccess();
+}
+
+function loginWithGoogle() { loginSuccess(); }
+function loginSuccess() {
+  document.getElementById('auth-page').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  initApp();
+  showToast('👋 Welcome back, Alex! You have a 7-day streak!');
+}
+
+function logout() {
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-page').style.display = 'flex';
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initApp() {
+  renderNews();
+  renderBadges();
+  renderLeaderboard();
+  renderDIY();
+  renderFlashcards();
+  renderQuizHistory();
+}
+
+// ============================================================
+// NEWS
+// ============================================================
+function renderNews() {
+  const feed = document.getElementById('news-feed');
+  feed.innerHTML = newsData.map(n => `
+    <div class="news-card" onclick="showToast('📰 Opening full article...')">
+      <div class="news-icon" style="background:rgba(${n.severity==='high'?'239,68,68':n.severity==='med'?'250,204,21':'34,197,94'},0.1)">
+        ${n.icon}
+      </div>
+      <div class="news-content">
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">
+          <span>${n.type}</span><span>${n.region}</span><span>${n.time}</span>
+          <span class="severity sev-${n.severity==='high'?'high':n.severity==='med'?'med':'low'}">${n.severity==='high'?'HIGH':'med'==='med'?n.severity.toUpperCase():n.severity.toUpperCase()}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// MAP TOOLTIP
+// ============================================================
+function showMapTooltip(e, title, sev, x, y) {
+  const tt = document.getElementById('map-tt');
+  tt.innerHTML = `<strong>${title}</strong><br><small style="color:var(--muted)">${sev}</small>`;
+  tt.style.display = 'block';
+  tt.style.left = (x) + 'px'; tt.style.top = (y - 60) + 'px';
+  setTimeout(() => tt.style.display = 'none', 3000);
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let selectedCategory = 'earthquake';
+let questions = [];
+let timerInterval;
+let timeLeft = 30;
+
+function selectCategory(el, cat) {
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCategory = cat;
+}
+
+function startQuiz() {
+  questions = quizData[selectedCategory] || quizData.earthquake;
+  appState.currentQuestion = 0; appState.quizScore = 0;
+  document.getElementById('quiz-select').style.display = 'none';
+  document.getElementById('quiz-arena').style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'none';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[appState.currentQuestion];
+  if (!q) { endQuiz(); return; }
+  document.getElementById('q-num').textContent = appState.currentQuestion + 1;
+  document.getElementById('quiz-bar').style.width = ((appState.currentQuestion + 1) / questions.length * 100) + '%';
+  document.getElementById('q-scenario').textContent = q.scenario;
+  document.getElementById('q-text').textContent = q.question;
+  const opts = document.getElementById('options-grid');
+  const letters = ['A', 'B', 'C', 'D'];
+  opts.innerHTML = q.options.map((o, i) => `
+    <button class="option-btn" onclick="selectAnswer(${i},${q.correct})" id="opt-${i}">
+      <span class="option-letter">${letters[i]}</span>${o}
+    </button>
+  `).join('');
+  document.getElementById('feedback-box').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  appState.answeredQuestions = false;
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval); timeLeft = 30;
+  const timer = document.getElementById('quiz-timer');
+  timer.textContent = timeLeft; timer.classList.remove('urgent');
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timer.textContent = timeLeft;
+    if (timeLeft <= 10) timer.classList.add('urgent');
+    if (timeLeft <= 0) { clearInterval(timerInterval); timeoutQuestion(); }
+  }, 1000);
+}
+
+function timeoutQuestion() {
+  if (appState.answeredQuestions) return;
+  appState.answeredQuestions = true;
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const q = questions[appState.currentQuestion];
+  document.getElementById('opt-' + q.correct).classList.add('correct');
+  showFeedback(false, "⏰ Time's up! " + q.explanation);
+}
+
+function selectAnswer(chosen, correct) {
+  if (appState.answeredQuestions) return;
+  appState.answeredQuestions = true;
+  clearInterval(timerInterval);
+  const q = questions[appState.currentQuestion];
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    document.getElementById('opt-' + chosen).classList.add('correct');
+    appState.quizScore++;
+    showFeedback(true, '✅ Correct! ' + q.explanation);
+    addPoints(50);
+  } else {
+    document.getElementById('opt-' + chosen).classList.add('wrong');
+    document.getElementById('opt-' + correct).classList.add('correct');
+    showFeedback(false, '❌ Not quite. ' + q.explanation);
+  }
+}
+
+function showFeedback(correct, msg) {
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = msg; fb.style.display = 'block';
+  document.getElementById('btn-next').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  appState.currentQuestion++;
+  if (appState.currentQuestion >= questions.length) endQuiz();
+  else showQuestion();
+}
+
+function endQuiz() {
+  clearInterval(timerInterval);
+  document.getElementById('quiz-arena').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'block';
+  const pct = Math.round(appState.quizScore / questions.length * 100);
+  document.getElementById('result-score').textContent = pct + '%';
+  const labels = ['Keep practicing! Every lesson counts.', 'Good effort! Review the missed questions.', 'Great job! Your knowledge is growing!', 'Excellent! You are well prepared!', 'Perfect! You are a safety expert!'];
+  document.getElementById('result-label').textContent = `${labels[Math.floor(pct/25)]} — ${appState.quizScore} of ${questions.length} correct.`;
+  const earnedBadges = [];
+  if (pct === 100) earnedBadges.push({ emoji: '🎯', name: 'Perfect Score' });
+  if (pct >= 80) earnedBadges.push({ emoji: '⭐', name: 'High Achiever' });
+  earnedBadges.push({ emoji: '✅', name: 'Quiz Complete' });
+  document.getElementById('result-badges').innerHTML = earnedBadges.map(b => `<div class="earned-badge"><div class="badge-icon">${b.emoji}</div><div class="badge-name">${b.name}</div></div>`).join('');
+  addPoints(pct * 2);
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-select').style.display = 'block';
+}
+
+// ============================================================
+// FLASHCARDS
+// ============================================================
+let currentFlashcat = 'earthquake';
+let allFlashcards = [];
+let flashIdx = 0;
+
+function renderFlashcards() {
+  const cats = Object.keys(flashcardsData);
+  document.getElementById('flash-cats').innerHTML = cats.map(c => `
+    <button class="flash-cat-btn ${c==='earthquake'?'active':''}" onclick="setFlashcat('${c}',this)">${c.charAt(0).toUpperCase()+c.slice(1)}</button>
+  `).join('');
+  setFlashcat('earthquake', document.querySelector('.flash-cat-btn'));
+}
+
+function setFlashcat(cat, btn) {
+  currentFlashcat = cat;
+  document.querySelectorAll('.flash-cat-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  allFlashcards = flashcardsData[cat] || [];
+  flashIdx = 0; showFlashcard();
+}
+
+function showFlashcard() {
+  const card = allFlashcards[flashIdx];
+  if (!card) return;
+  document.getElementById('flashcard-inner').classList.remove('flipped');
+  document.getElementById('card-cat-label').textContent = currentFlashcat.charAt(0).toUpperCase() + currentFlashcat.slice(1);
+  document.getElementById('card-front-text').textContent = card.front;
+  document.getElementById('card-back-text').textContent = card.back;
+  document.getElementById('flash-counter').textContent = (flashIdx + 1) + ' / ' + allFlashcards.length;
+}
+
+function flipCard() {
+  document.getElementById('flashcard-inner').classList.toggle('flipped');
+}
+
+function nextCard() { flashIdx = (flashIdx + 1) % allFlashcards.length; showFlashcard(); }
+function prevCard() { flashIdx = (flashIdx - 1 + allFlashcards.length) % allFlashcards.length; showFlashcard(); }
+
+// ============================================================
+// DIY GUIDES
+// ============================================================
+function renderDIY() {
+  document.getElementById('diy-grid').innerHTML = diyGuides.map((g, gi) => `
+    <div class="diy-card" id="diy-${gi}" onclick="toggleDIY(${gi})">
+      <div class="diy-header">
+        <div class="diy-icon-row">
+          <div class="diy-icon">${g.icon}</div>
+          <div><div class="diy-title">${g.title}</div></div>
+        </div>
+        <div class="diy-desc">${g.desc}</div>
+        <div class="diy-tags">${g.tags.map(t => `<span class="diy-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="diy-expanded">
+        <div class="diy-body">
+          ${g.steps.map((s, si) => `<div class="diy-step"><div class="diy-step-num">${si+1}</div><div>${s}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleDIY(idx) {
+  const card = document.getElementById('diy-' + idx);
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+function renderBadges() {
+  document.getElementById('badges-grid').innerHTML = badgesData.map(b => `
+    <div class="badge-card ${b.unlocked ? 'unlocked' : 'locked'}" onclick="${b.unlocked ? `showToast('🎖️ ${b.name}: ${b.desc}')` : `showToast('🔒 ${b.name} locked. ${b.desc}')`}">
+      <div class="badge-emoji">${b.emoji}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+function renderLeaderboard() {
+  const rankLabels = ['🥇', '🥈', '🥉'];
+  document.getElementById('leaderboard').innerHTML = leaderboardData.map(p => `
+    <div class="lb-row ${p.isMe ? 'me' : ''}">
+      <div class="lb-rank ${p.rank===1?'gold':p.rank===2?'silver':p.rank===3?'bronze':''}">${p.rank <= 3 ? rankLabels[p.rank-1] : '#'+p.rank}</div>
+      <div>
+        <div class="lb-name">${p.name} ${p.isMe ? '<span style="font-size:11px;color:var(--accent)">(You)</span>' : ''}</div>
+        <div class="lb-level">${p.level}</div>
+      </div>
+      <div class="lb-pts">${p.pts.toLocaleString()} pts</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// QUIZ HISTORY
+// ============================================================
+function renderQuizHistory() {
+  document.getElementById('quiz-history').innerHTML = quizHistory.map(q => {
+    const pct = Math.round(q.score);
+    const cls = pct >= 80 ? 'score-great' : pct >= 60 ? 'score-ok' : 'score-poor';
+    return `
+      <div class="hist-row">
+        <div class="hist-left">
+          <div class="hist-icon">${q.icon}</div>
+          <div><div class="hist-name">${q.name}</div><div class="hist-date">${q.date}</div></div>
+        </div>
+        <div class="hist-score ${cls}">${pct}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// POINTS
+// ============================================================
+function addPoints(pts) {
+  appState.points += pts;
+  document.getElementById('nav-points').textContent = appState.points.toLocaleString();
+  if (pts > 0) showToast(`⭐ +${pts} points earned!`);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// SEVERITY LABEL FIX
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {});
+</script>
+</body>
+</html>
